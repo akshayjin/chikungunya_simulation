@@ -5,3 +5,9 @@ Mosquito-borne diseases, such as chikungunya, dengue, and malaria, are re-emergi
 Link to our AAMAS publication: http://www.aamas2017.org/proceedings/pdfs/p426.pdf
 
 {Akshay Jindal and Shrisha Rao. 2017. Agent-Based Modeling and Simulation of Mosquito-Borne Disease Transmission. In Proceedings of the 16th Conference on Autonomous Agents and MultiAgent Systems (AAMAS '17). International Foundation for Autonomous Agents and Multiagent Systems, Richland, SC, 426-435.}
+
+Installation:
+1) Download and Install Gama Platform (https://gama-platform.github.io/download)
+2) Clone this repo and import in the Game workspace
+3) Run the model in GAMAProject/models/SI_city1.gaml
+4) Tune the parameters as required. (Note: Model here is not tuned to the values in the paper)
