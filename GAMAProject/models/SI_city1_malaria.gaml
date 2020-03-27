@@ -25,8 +25,8 @@ global{
 	float probability_mating <- 0.2;
 	float mosquito_sex_ratio <- 0.5;
 	float sensor_range <- 3.0 #m;
-	float probability_t1_park <- 0.5;
-	float probability_t2_park <- 0.1;
+	float probability_t1_park <- 0.0;
+	float probability_t2_park <- 0.0;
 	float mortality_rate <- 0.05; // per day
 	int max_meals <- 2; // biting rate per day
 	
@@ -83,8 +83,8 @@ global{
 			my_house <- one_of(building);
 			location <- any_location_in(my_house);
 			type <- rnd_choice([nb_people_type0/nb_people,nb_people_type1/nb_people,nb_people_type2/nb_people,nb_people_type3/nb_people]);
-			state_duration[1] <- 2+rnd(4); // 2-6 days
-			state_duration[2] <- 4+rnd(3); // 4-7 days
+			state_duration[1] <- 10+rnd(5); // 10-15 days
+			state_duration[2] <- 5+rnd(2); // 5-7 days 
 			state_duration[3] <- 14+rnd(90); // 2 weeks to 3 months
 		}
 		
@@ -173,13 +173,13 @@ species mosquito skills:[moving]{
 	int time_passed_virus <- 0;
 	int time_to_mature <- 3 + abs(int(((int(climate_data[0,current_month])-32)*5/9+(int(climate_data[1,current_month])-32)*5/9)/2)-21)/5;
 	
-	reflex move when:  !is_night{
+	reflex move when:  is_night{
 		do wander amplitude:350 #m;
 	}
 
 	
 	/* TO DO */
-	reflex feed when:  current_hour>=9 and current_hour<=18 and time mod 600 = 0 and num_meals_today<max_meals{
+	reflex feed when:  (current_hour<=7 or current_hour>=19) and time mod 600 = 0 and num_meals_today<max_meals{
 		if is_infected{
 			ask any (people at_distance sensor_range) {
 				if !(is_protected and in_my_house){
@@ -201,8 +201,8 @@ species mosquito skills:[moving]{
 			ask any (people at_distance sensor_range) {
 				if !(is_protected and in_my_house) {
 					myself.num_meals_today <- myself.num_meals_today + 1;
-					if is_infected{
-						float p_trans <- 0.275;//days_infected/state_duration[1] <1.0 ? days_infected/state_duration[1] : 1.0;//#e^(days_infected-state_duration[1]) <1 ? #e^(days_infected-state_duration[1]) : 1.0;
+					if (is_infected and (state=2 or (state_duration[1]-days_infected)<2)){
+						float p_trans <- 0.3;//days_infected/state_duration[1] <1.0 ? days_infected/state_duration[1] : 1.0;//#e^(days_infected-state_duration[1]) <1 ? #e^(days_infected-state_duration[1]) : 1.0;
 						if flip(p_trans) {
 							myself.is_infected <- true;
 						}

@@ -49,18 +49,18 @@ global{
 //	int nb_people_type1 <- 167;
 //	int nb_people_type2 <- 167;
 //	int nb_people_type3 <- 77;
-	
+//	
 	// Quarantined City (with no movement)
-//	int nb_people_type0 <- 0;
-//	int nb_people_type1 <- 0;
-//	int nb_people_type2 <- 546;
-//	int nb_people_type3 <- 0;
+	int nb_people_type0 <- 0;
+	int nb_people_type1 <- 0;
+	int nb_people_type2 <- 546;
+	int nb_people_type3 <- 0;
 	
 	// Quarantined City (with essential services (10% businesses) running)
-	int nb_people_type0 <- 0;
-	int nb_people_type1 <- 17; // Also set probability_t2_park to 0;
-	int nb_people_type2 <- 521;
-	int nb_people_type3 <- 8;
+//	int nb_people_type0 <- 0;
+//	int nb_people_type1 <- 17; // Also set probability_t2_park to 0;
+//	int nb_people_type2 <- 521;
+//	int nb_people_type3 <- 8;
 	
 	int nb_protected <- 0;
 	
@@ -83,8 +83,8 @@ global{
 			my_house <- one_of(building);
 			location <- any_location_in(my_house);
 			type <- rnd_choice([nb_people_type0/nb_people,nb_people_type1/nb_people,nb_people_type2/nb_people,nb_people_type3/nb_people]);
-			state_duration[1] <- 2+rnd(4); // 2-6 days
-			state_duration[2] <- 4+rnd(3); // 4-7 days
+			state_duration[1] <- 4+rnd(8); // 4-10 days
+			state_duration[2] <- 2+rnd(7); // 2-7 days (+2 to model infectious in recovered state)
 			state_duration[3] <- 14+rnd(90); // 2 weeks to 3 months
 		}
 		
@@ -201,7 +201,7 @@ species mosquito skills:[moving]{
 			ask any (people at_distance sensor_range) {
 				if !(is_protected and in_my_house) {
 					myself.num_meals_today <- myself.num_meals_today + 1;
-					if is_infected{
+					if (is_infected and (state=2 or (state_duration[1]-days_infected)<2)){
 						float p_trans <- 0.275;//days_infected/state_duration[1] <1.0 ? days_infected/state_duration[1] : 1.0;//#e^(days_infected-state_duration[1]) <1 ? #e^(days_infected-state_duration[1]) : 1.0;
 						if flip(p_trans) {
 							myself.is_infected <- true;
