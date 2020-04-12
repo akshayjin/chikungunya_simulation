@@ -25,8 +25,8 @@ global{
 	float probability_mating <- 0.2;
 	float mosquito_sex_ratio <- 0.5;
 	float sensor_range <- 3.0 #m;
-	float probability_t1_park <- 0.0;
-	float probability_t2_park <- 0.0;
+	float probability_t1_park <- 0.5;
+	float probability_t2_park <- 0.1;
 	float mortality_rate <- 0.05; // per day
 	int max_meals <- 2; // biting rate per day
 	
@@ -38,18 +38,18 @@ global{
 	bool is_night <- true update: current_hour < 7 or current_hour > 20;
 	
 	/* Climate Data */
-	file climate_file <- file("../includes/St_Barthelemy_Climate.csv");
+	file climate_file <- file("../includes/Delhi_Climate.csv");
 	matrix climate_data; // 12*4 matrix : TempHigh, TempLow, RainyDays, Inches
 	int pools_per_rain <- 5; // adds rain_severity*pools_per_rain water sources
 	
 	/* Population Statistics */
 
 	// Regular City from Census Data
-//	int nb_people_type0 <- 135;
-//	int nb_people_type1 <- 167;
-//	int nb_people_type2 <- 167;
-//	int nb_people_type3 <- 77;
-//	
+	int nb_people_type0 <- 135;
+	int nb_people_type1 <- 167;
+	int nb_people_type2 <- 167;
+	int nb_people_type3 <- 77;
+	
 	// Quarantined City (with no movement)
 //	int nb_people_type0 <- 0;
 //	int nb_people_type1 <- 0;
@@ -61,12 +61,12 @@ global{
 //	int nb_people_type1 <- 17; // Also set probability_t2_park to 0;
 //	int nb_people_type2 <- 521;
 //	int nb_people_type3 <- 8;
-	
+
 	// Quarantined City (with essential services (5% businesses) running)
-	int nb_people_type0 <- 0;
-	int nb_people_type1 <- 9; // Also set probability_t2_park to 0;
-	int nb_people_type2 <- 533;
-	int nb_people_type3 <- 4;
+//	int nb_people_type0 <- 0;
+//	int nb_people_type1 <- 9; // Also set probability_t2_park to 0;
+//	int nb_people_type2 <- 533;
+//	int nb_people_type3 <- 4;
 	
 	int nb_protected <- 0;
 	
@@ -89,16 +89,16 @@ global{
 			my_house <- one_of(building);
 			location <- any_location_in(my_house);
 			type <- rnd_choice([nb_people_type0/nb_people,nb_people_type1/nb_people,nb_people_type2/nb_people,nb_people_type3/nb_people]);
-			state_duration[1] <- 4+rnd(8); // 4-10 days
-			state_duration[2] <- 2+rnd(7); // 2-7 days (+2 to model infectious in recovered state)
+			state_duration[1] <- 2+rnd(4); // 2-6 days
+			state_duration[2] <- 4+rnd(3); // 4-7 days
 			state_duration[3] <- 14+rnd(90); // 2 weeks to 3 months
 		}
 		
 		create water_source number:nb_water_sources {
-			create egg number:25{
+			create egg number:50{
 				my_water_source <- myself;
 				is_infected <- false;
-				max_age <- (6 + 5 - int((int(climate_data[0,current_month])+int(climate_data[1,current_month]))/30));
+				max_age <- 8 + abs(int(((int(climate_data[0,current_month])-32)*5/9+(int(climate_data[1,current_month])-32)*5/9)/2)-25);
 				age <- 5;
 			}
 		}
@@ -139,7 +139,14 @@ global{
 		}
 	} 
 	
-	reflex end_simulation when: infected_rate = 1.0 or (nb_people_infected=0 and nb_mosquito_infected=0 and nb_egg_infected=0){
+	reflex extend_simulation when: nb_people_infected=0 and nb_mosquito_infected=0 and nb_egg_infected=0{
+		ask nb_infected_init among people {
+			is_infected <- true;
+			state <- 1;
+		}
+	}
+	
+	reflex end_simulation when: infected_rate = 1.0 {
 		do pause;
 	}
 }
@@ -207,7 +214,7 @@ species mosquito skills:[moving]{
 			ask any (people at_distance sensor_range) {
 				if !(is_protected and in_my_house) {
 					myself.num_meals_today <- myself.num_meals_today + 1;
-					if (is_infected and (state=2 or (state_duration[1]-days_infected)<2)){
+					if is_infected{
 						float p_trans <- 0.275;//days_infected/state_duration[1] <1.0 ? days_infected/state_duration[1] : 1.0;//#e^(days_infected-state_duration[1]) <1 ? #e^(days_infected-state_duration[1]) : 1.0;
 						if flip(p_trans) {
 							myself.is_infected <- true;
@@ -226,9 +233,10 @@ species mosquito skills:[moving]{
 				is_infected <- infection;
 				max_age <- 8 + abs(int(((int(climate_data[0,current_month])-32)*5/9+(int(climate_data[1,current_month])-32)*5/9)/2)-25);
 			}
+			myself.time_passed_eggs <- 0;
+			myself.carry_eggs <- false;
 		}
-		time_passed_eggs <- 0;
-		carry_eggs <- false;
+		
 	}
 	
 	reflex startDay when: time mod 86400 = 0{

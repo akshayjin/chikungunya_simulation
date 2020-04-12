@@ -62,6 +62,12 @@ global{
 	int nb_people_type2 <- 521;
 	int nb_people_type3 <- 8;
 	
+	// Quarantined City (with essential services (5% businesses) running)
+//	int nb_people_type0 <- 0;
+//	int nb_people_type1 <- 9; // Also set probability_t2_park to 0;
+//	int nb_people_type2 <- 533;
+//	int nb_people_type3 <- 4;
+	
 	int nb_protected <- 0;
 	
 	/* City Details */
@@ -86,6 +92,9 @@ global{
 			state_duration[1] <- 10+rnd(5); // 10-15 days
 			state_duration[2] <- 5+rnd(2); // 5-7 days 
 			state_duration[3] <- 14+rnd(90); // 2 weeks to 3 months
+			if(type = 1 and flip(0.3)){
+				works_at_night <- true;
+			}
 		}
 		
 		create water_source number:nb_water_sources {
@@ -262,9 +271,10 @@ species people skills:[moving]{
 	int current_location <- 0; // 0->my house 1->school 2->office 3->random house 4->park
 	int type <-0; // 0->student 1->white collar 2->stationary 3->continously moving
 	bool is_protected <- false;
+	bool works_at_night <- false;
 	
 		
-	reflex move when: target != nil and !is_night and type!=2 and (state=0 or state=1 or state=4){
+	reflex move when: target != nil and ( !is_night or (is_night and works_at_night)) and type!=2 and (state=0 or state=1 or state=4){
 		do goto target:target on: road_network;
 		if (location = target) {
 			target <- nil;
@@ -317,27 +327,53 @@ species people skills:[moving]{
 			}
 		}
 		else if type = 1{
-			if current_hour = 7 and (time mod 3600 = 0){
-				target <- any_location_in (office);
-				current_location <- 2;
-				in_my_house <- false;
-			}
-			else if current_hour = 15 and (time mod 3600 = 0){
-				target <- any_location_in (my_house);
-				current_location <- 0;
-				in_my_house <- true;
-			}
-			else if current_hour = 16 and (time mod 3600 = 0){
-				if flip(probability_t2_park){
-					target <- any_location_in (square(400) at_location {200,1600});
-					current_location <- 4;
+			if(!works_at_night)
+			{
+				if current_hour = 7 and (time mod 3600 = 0){
+					target <- any_location_in (office);
+					current_location <- 2;
 					in_my_house <- false;
 				}
-			}
-			else if  current_hour = 19 and (time mod 3600 = 0){
-				target <- any_location_in (my_house);
-				current_location <- 0;
-				in_my_house <- true;
+				else if current_hour = 15 and (time mod 3600 = 0){
+					target <- any_location_in (my_house);
+					current_location <- 0;
+					in_my_house <- true;
+				}
+				else if current_hour = 16 and (time mod 3600 = 0){
+					if flip(probability_t2_park){
+						target <- any_location_in (square(400) at_location {200,1600});
+						current_location <- 4;
+						in_my_house <- false;
+					}
+				}
+				else if  current_hour = 19 and (time mod 3600 = 0){
+					target <- any_location_in (my_house);
+					current_location <- 0;
+					in_my_house <- true;
+				}
+			} else {
+				if current_hour = 20 and (time mod 3600 = 0){
+					target <- any_location_in (office);
+					current_location <- 2;
+					in_my_house <- false;
+				}
+				else if current_hour = 4 and (time mod 3600 = 0){
+					target <- any_location_in (my_house);
+					current_location <- 0;
+					in_my_house <- true;
+				}
+				else if current_hour = 16 and (time mod 3600 = 0){
+					if flip(probability_t2_park){
+						target <- any_location_in (square(400) at_location {200,1600});
+						current_location <- 4;
+						in_my_house <- false;
+					}
+				}
+				else if  current_hour = 19 and (time mod 3600 = 0){
+					target <- any_location_in (my_house);
+					current_location <- 0;
+					in_my_house <- true;
+				}
 			}
 		}
 		else if type = 3{

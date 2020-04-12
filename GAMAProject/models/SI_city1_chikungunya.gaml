@@ -7,7 +7,7 @@ model SI_city
 global{ 
 	int nb_people <- 546;
 	int nb_infected_init <- 1;
-	int nb_mosquito <- 1000;
+	int nb_mosquito <- 340;
 	int nb_water_sources <- 5 update: water_source count(each.current_age>=0);
 	int nb_eggs <- 0 update: egg count(each.age>=0);
 	
@@ -51,16 +51,22 @@ global{
 //	int nb_people_type3 <- 77;
 	
 	// Quarantined City (with no movement)
-//	int nb_people_type0 <- 0;
-//	int nb_people_type1 <- 0;
-//	int nb_people_type2 <- 546;
-//	int nb_people_type3 <- 0;
+	int nb_people_type0 <- 0;
+	int nb_people_type1 <- 0;
+	int nb_people_type2 <- 546;
+	int nb_people_type3 <- 0;
 	
 	// Quarantined City (with essential services (10% businesses) running)
-	int nb_people_type0 <- 0;
-	int nb_people_type1 <- 17; // Also set probability_t2_park to 0;
-	int nb_people_type2 <- 521;
-	int nb_people_type3 <- 8;
+//	int nb_people_type0 <- 0;
+//	int nb_people_type1 <- 17; // Also set probability_t2_park to 0;
+//	int nb_people_type2 <- 521;
+//	int nb_people_type3 <- 8;
+
+	// Quarantined City (with essential services (5% businesses) running)
+//	int nb_people_type0 <- 0;
+//	int nb_people_type1 <- 9; // Also set probability_t2_park to 0;
+//	int nb_people_type2 <- 533;
+//	int nb_people_type3 <- 4;
 	
 	int nb_protected <- 0;
 	
