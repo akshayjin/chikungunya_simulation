@@ -15,22 +15,19 @@ smoothed_s2 = spline(weeks, s2, newXSamplePoints);
 smoothed_ess_quarantine = spline(weeks, ess_quarantine, newXSamplePoints);
 smoothed_abs_quarantine = spline(weeks, abs_quarantine, newXSamplePoints);
 
+
+plot(newXSamplePoints, smoothed_no_strategy, 'r','HandleVisibility','off');
+hold on
+scatter(weeks, no_strategy, 'or', 'DisplayName', 'No Lockdown');
+
+plot(newXSamplePoints, smoothed_abs_quarantine, 'm','HandleVisibility','off');
+scatter(weeks, abs_quarantine, 'dm', 'DisplayName', 'Complete Lockdown');
+
 plot(newXSamplePoints,smoothed_ess_quarantine, 'b','HandleVisibility','off');
+scatter(weeks, ess_quarantine, 'sb', 'DisplayName','Flexible Lockdown');
+
 title('Chikungunya Epidemiology')
 xlabel('Epidemiological Week')
 ylabel('Number of Cumulative Cases (/1000)')
-
-hold on
-scatter(weeks, ess_quarantine, 'sb', 'DisplayName','Quarantine(+Essential Services)');
-
-%plot(newXSamplePoints,smoothed_s2, 'b','HandleVisibility','off');
-%scatter(weeks, s2, 'xb', 'DisplayName', 'Strategy 2');
-
-plot(newXSamplePoints, smoothed_no_strategy, 'r','HandleVisibility','off');
-scatter(weeks, no_strategy, 'or', 'DisplayName', 'No Strategy');
-
-plot(newXSamplePoints, smoothed_abs_quarantine, 'm','HandleVisibility','off');
-scatter(weeks, abs_quarantine, 'dm', 'DisplayName', 'Absolute Qurantine');
-
 hold off
 legend

@@ -1,9 +1,9 @@
 weeks = 0:14;
 
 %cases /1000
-no_strategy =    [2 2 4 4 8 12 14 14 14 16 18 20 20 20 20];
-abs_quarantine = [2 2 4 8 18 18 18 18 18 24 24 26 28 28 28];
-ess_quarantine = [2 2 4 6 14 16 18 18 18 22 22 22 22 22 22];
+no_strategy =    [2 2 2 4 6 6 8 12 16 12 12 12 12 12 12];
+abs_quarantine = [2 2 4 12 20 28 36 38 38 46 46 50 50 50 50];
+ess_quarantine = [2 2 6 10 14 20 26 34 34 34 34 34 34 34 34];
 
 samplingRateIncrease = 10;
 newXSamplePoints = linspace(0, length(weeks)-1, (length(weeks)-1) * samplingRateIncrease);
@@ -21,7 +21,7 @@ scatter(weeks, abs_quarantine, 'dm', 'DisplayName', 'Complete Lockdown');
 plot(newXSamplePoints,smoothed_ess_quarantine, 'b','HandleVisibility','off');
 scatter(weeks, ess_quarantine, 'sb', 'DisplayName','Flexible Lockdown');
 
-title('Dengue Epidemiology')
+title('Malaria Epidemiology')
 xlabel('Epidemiological Week')
 ylabel('Number of Cumulative Cases (/1000)')
 hold off
