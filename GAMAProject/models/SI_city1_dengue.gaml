@@ -177,7 +177,7 @@ species mosquito skills:[moving]{
 	bool carry_eggs <- false;
 	int time_passed_eggs <- 0;
 	int time_passed_virus <- 0;
-	int time_to_mature <- 3 + abs(int(((int(climate_data[0,current_month])-32)*5/9+(int(climate_data[1,current_month])-32)*5/9)/2)-21)/5;
+	int time_to_mature <- int(3 + abs(int(((int(climate_data[0,current_month])-32)*5/9+(int(climate_data[1,current_month])-32)*5/9)/2)-21)/5);
 	
 	reflex move when:  !is_night{
 		do wander amplitude:350 #m;
@@ -436,14 +436,14 @@ experiment main_experiment type:gui{
 			species mosquito aspect:triangle; 
 		}
 		
-		display chart1 refresh_every: 10 {
+		display chart1 refresh:every(10#cycle) {
 			chart "Disease spreading" type: series {
 //				data "susceptible" value: nb_people_not_infected color: #green;
 				data "infected" value: nb_people_infected color: #red;
 				data "infected cumulative (/500)" value: nb_infected_cumulative color: #blue;
 			}
 		}
-		display chart2 refresh_every: 10 {
+		display chart2 refresh:every(10#cycle) {
 			chart "Mosquito Population" type: series {
 				data "num_mosquitoes" value: nb_mosquito color: #green;
 				data "infected" value: nb_mosquito_infected color: #red;
