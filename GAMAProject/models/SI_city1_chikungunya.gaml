@@ -45,16 +45,16 @@ global{
 	/* Population Statistics */
 
 	// Regular City from Census Data
-//	int nb_people_type0 <- 135;
-//	int nb_people_type1 <- 167;
-//	int nb_people_type2 <- 167;
-//	int nb_people_type3 <- 77;
+	int nb_people_type0 <- 135;
+	int nb_people_type1 <- 167;
+	int nb_people_type2 <- 167;
+	int nb_people_type3 <- 77;
 	
 	// Quarantined City (with no movement)
-	int nb_people_type0 <- 0;
-	int nb_people_type1 <- 0;
-	int nb_people_type2 <- 546;
-	int nb_people_type3 <- 0;
+//	int nb_people_type0 <- 0;
+//	int nb_people_type1 <- 0;
+//	int nb_people_type2 <- 546;
+//	int nb_people_type3 <- 0;
 	
 	// Quarantined City (with essential services (10% businesses) running)
 //	int nb_people_type0 <- 0;
@@ -186,31 +186,33 @@ species mosquito skills:[moving]{
 	
 	/* TO DO */
 	reflex feed when:  current_hour>=9 and current_hour<=18 and time mod 600 = 0 and num_meals_today<max_meals{
-		if is_infected{
-			ask any (people at_distance sensor_range) {
-				if !(is_protected and in_my_house){
-					myself.num_meals_today <- myself.num_meals_today + 1;
-					if myself.is_infected{
-						float p_trans <- 0.6;//myself.time_passed_virus/10 < 1.0 ? myself.time_passed_virus/10:1.0;//#e^(myself.time_passed_virus-10) <1 ? #e^(myself.time_passed_virus-10) : 1.0;
-						if (state=0){
-							if flip(p_trans){	
-								is_infected <- true;
-								state <- 1;
-								nb_infected_cumulative <- nb_infected_cumulative+1;
+		if(any (people at_distance sensor_range) != nil){
+			if is_infected{
+				ask any (people at_distance sensor_range) {
+					if !(is_protected and in_my_house){
+						myself.num_meals_today <- myself.num_meals_today + 1;
+						if myself.is_infected{
+							float p_trans <- 0.6;//myself.time_passed_virus/10 < 1.0 ? myself.time_passed_virus/10:1.0;//#e^(myself.time_passed_virus-10) <1 ? #e^(myself.time_passed_virus-10) : 1.0;
+							if (state=0){
+								if flip(p_trans){	
+									is_infected <- true;
+									state <- 1;
+									nb_infected_cumulative <- nb_infected_cumulative+1;
+								}
 							}
 						}
 					}
 				}
 			}
-		}
-		else {
-			ask any (people at_distance sensor_range) {
-				if !(is_protected and in_my_house) {
-					myself.num_meals_today <- myself.num_meals_today + 1;
-					if is_infected{
-						float p_trans <- 0.275;//days_infected/state_duration[1] <1.0 ? days_infected/state_duration[1] : 1.0;//#e^(days_infected-state_duration[1]) <1 ? #e^(days_infected-state_duration[1]) : 1.0;
-						if flip(p_trans) {
-							myself.is_infected <- true;
+			else {
+				ask any (people at_distance sensor_range) {
+					if !(is_protected and in_my_house) {
+						myself.num_meals_today <- myself.num_meals_today + 1;
+						if is_infected{
+							float p_trans <- 0.275;//days_infected/state_duration[1] <1.0 ? days_infected/state_duration[1] : 1.0;//#e^(days_infected-state_duration[1]) <1 ? #e^(days_infected-state_duration[1]) : 1.0;
+							if flip(p_trans) {
+								myself.is_infected <- true;
+							}
 						}
 					}
 				}
